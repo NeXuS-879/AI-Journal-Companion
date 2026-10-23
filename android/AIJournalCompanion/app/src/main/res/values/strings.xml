@@ -10,6 +10,11 @@
     <string name="analyzing">Analyzing…</string>
     <string name="analysis_loading">Reflecting on your entry. This may take a moment.</string>
     <string name="analysis_result">Your reflection</string>
+    <string name="history_title">Journal history (%1$d)</string>
+    <string name="history_empty">Your analyzed entries will appear here.</string>
+    <string name="history_session_notice">History is kept in memory for this session. It clears when the app process ends.</string>
+    <string name="history_emotion">Emotion: %1$s %2$s</string>
+    <string name="history_advice">Advice: %1$s</string>
     <string name="analysis_connection_error">Cannot reach the backend. Check that FastAPI is running and your connection is available, then tap Analyze to retry.</string>
     <string name="analysis_timeout_error">Analysis took too long. Please try again.</string>
     <string name="analysis_permission_error">Local network access is needed to analyze your entry. Tap Analyze to allow access. If the prompt no longer appears, allow Nearby devices in Android Settings for this app.</string>

@@ -64,7 +64,8 @@ The repository currently provides:
 - Immutable StateFlow exposes input, permission-pending, loading, result, validation and error state. Compose uses lifecycle-aware collection. Busy controls prevent duplicate submission; request errors preserve text and permit retry (FR-12, NFR-03).
 - Separate Kotlin request/response models, a six-label emotion enum, and an injectable suspend HTTP client implement the Android REST/JSON boundary. The client validates responses and performs requests on an IO dispatcher.
 - On Android 17 a valid submission prompts for local-network permission when required. Denial prevents the request and shows guidance; grant resumes the pending submission.
-- Draft and result survive activity recreation in ViewModel memory. In-memory history (FR-04), persistence, algorithms and additional interactions are not part of this increment.
+- Draft, result and history survive activity recreation in ViewModel memory. Successful analyses add a `JournalEntry` with submitted text, emotion, advice, stable ID and timestamp; failures and denied permissions add nothing (FR-04).
+- The history list displays newest entries first with timestamped text/emotion/advice cards and a clear session-only limitation. A fresh ViewModel/process begins with empty history. Persistent storage remains outside scope; algorithms and additional interactions remain future work.
 - `backend/.venv` exists and contains FastAPI, Uvicorn, Requests, and Pydantic.
 - Backend runtime and test dependency files record the direct Python dependencies.
 - `backend/main.py` defines a FastAPI application.

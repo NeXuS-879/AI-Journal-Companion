@@ -1,0 +1,32 @@
+{
+  "updated": "23 October 2026",
+  "source_commit": "a09afd8 + uncommitted history",
+  "summary": "Recorded passes: 16 backend. History retest: 16 Android unit and 15 emulator tests. Future features are Not run.",
+  "cases": [
+    ["TC-01", "GET / status (backend test)", "HTTP 200 and status JSON.", "Expected status returned.", "Pass"],
+    ["TC-02", "POST blank text (backend test)", "Reject whitespace with HTTP 422.", "HTTP 422 received.", "Pass"],
+    ["TC-03", "Valid POST (API fixture)", "Return emotion and advice strings.", "Validated JSON returned.", "Pass"],
+    ["TC-04", "Invalid Ollama result (fixture)", "Return HTTP 502.", "HTTP 502 received.", "Pass"],
+    ["TC-05", "Unavailable Ollama (fixture)", "Return HTTP 503.", "HTTP 503 received.", "Pass"],
+    ["TC-06", "Submit empty or spaces (UI test)", "Show input error; send nothing.", "Error displayed; no API call.", "Pass"],
+    ["TC-07", "Input length (model and UI tests)", "Accept 5,000; reject 5,001 code points.", "Boundary and emoji checks passed.", "Pass"],
+    ["TC-08", "UTF-8 POST (loopback fixture)", "Preserve quotes, newline and emoji.", "JSON round trip matched.", "Pass"],
+    ["TC-09", "Pending request (ViewModel/UI)", "Show loading; prevent duplicate calls.", "Progress shown; one request.", "Pass"],
+    ["TC-10", "Permission grant (manual emulator)", "Prompt; resume after Allow.", "Prompt seen; real result returned.", "Pass"],
+    ["TC-11", "Permission denial (ViewModel test)", "Keep draft; send nothing.", "Permission error; no API call.", "Pass"],
+    ["TC-12", "Real Analyze (manual and live UI)", "Show emotion, emoji and advice.", "JOY and advice shown; screenshot E1.", "Pass"],
+    ["TC-13", "Failure and retry (ViewModel/UI)", "Retain draft; allow successful retry.", "Error shown; retry test succeeded.", "Pass"],
+    ["TC-14", "Activity recreation (live UI test)", "Retain draft, result and history.", "Two real entries retained after recreation.", "Pass"],
+    ["TC-15", "Multiple-entry in-memory history", "Retain successful entries; exclude failed ones.", "Newest first; failure excluded; 30-card scroll passed.", "Pass"],
+    ["TC-16", "Bubble Sort and dropdown", "Sort by agreed emotion order.", "Feature not implemented.", "Not run"],
+    ["TC-17", "Insertion Sort and dropdown", "Match Bubble Sort on same data.", "Feature not implemented.", "Not run"],
+    ["TC-18", "Selection Sort and dropdown", "Match other sorts on same data.", "Feature not implemented.", "Not run"],
+    ["TC-19", "Binary Tree search", "Return all matching emotions.", "Feature not implemented.", "Not run"],
+    ["TC-20", "HashMap search", "Return all matching emotions.", "Feature not implemented.", "Not run"],
+    ["TC-21", "Doubly Linked List search", "Return all matching emotions.", "Feature not implemented.", "Not run"],
+    ["TC-22", "Canvas pie-chart popup", "Show correct emotion frequencies.", "Feature not implemented.", "Not run"],
+    ["TC-23", "Drag entry onto trash target", "Delete entry; update chart and searches.", "Feature not implemented.", "Not run"],
+    ["TC-24", "Local HTML WebView help", "Open help popup without internet.", "Feature not implemented.", "Not run"],
+    ["TC-25", "Performance comparison", "Measure response delay, resources and algorithms.", "Formal evaluation pending.", "Not run"]
+  ]
+}

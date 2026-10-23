@@ -53,6 +53,7 @@ class JournalViewModelTest {
         }
         advanceUntilIdle()
         assertEquals(0, calls)
+        assertTrue(model.uiState.value.history.isEmpty())
     }
 
     @Test
@@ -72,6 +73,7 @@ class JournalViewModelTest {
         advanceUntilIdle()
         assertFalse(model.uiState.value.isLoading)
         assertEquals(result, model.uiState.value.result)
+        assertEquals(1, model.uiState.value.history.size)
     }
 
     @Test
@@ -123,6 +125,7 @@ class JournalViewModelTest {
             assertEquals("A journal entry", model.uiState.value.input)
             assertFalse(model.uiState.value.isLoading)
             assertNull(model.uiState.value.result)
+            assertTrue(model.uiState.value.history.isEmpty())
         }
         handler = { result }
         model.requestAnalysis(true)
@@ -146,5 +149,71 @@ class JournalViewModelTest {
         model.onInputChanged("😊".repeat(5_000))
         assertEquals(5_000, model.uiState.value.characterCount)
         assertNull(model.uiState.value.inputError)
+    }
+
+    @Test
+    fun successfulEntriesKeepTextEmotionAdviceAndNewestFirstOrder() = runTest(dispatcher) {
+        model.onInputChanged("  First entry  ")
+        model.requestAnalysis(true)
+        advanceUntilIdle()
+        val firstSnapshot = model.uiState.value.history
+        val first = firstSnapshot.single()
+        assertEquals("First entry", first.text)
+        assertEquals(result.emotion, first.emotion)
+        assertEquals(result.advice, first.advice)
+        assertTrue(first.id.isNotBlank())
+        assertNotNull(first.createdAt)
+
+        handler = { AnalyzeResponse(Emotion.SADNESS, "Rest and take care of yourself.") }
+        model.onInputChanged("Second entry")
+        model.requestAnalysis(true)
+        advanceUntilIdle()
+        val history = model.uiState.value.history
+        assertEquals(listOf("Second entry", "First entry"), history.map { it.text })
+        assertEquals(Emotion.SADNESS, history.first().emotion)
+        assertEquals(1, firstSnapshot.size)
+        assertEquals(first, history.last())
+        assertNotEquals(first.id, history.first().id)
+    }
+
+    @Test
+    fun intentionalRepeatedTextCreatesSeparateEntries() = runTest(dispatcher) {
+        model.onInputChanged("A quiet day")
+        repeat(2) {
+            model.requestAnalysis(true)
+            advanceUntilIdle()
+        }
+        assertEquals(2, model.uiState.value.history.size)
+        assertEquals(2, model.uiState.value.history.map { it.id }.toSet().size)
+    }
+
+    @Test
+    fun failurePermissionDenialAndDraftEditingPreserveExistingHistory() = runTest(dispatcher) {
+        model.onInputChanged("Successful entry")
+        model.requestAnalysis(true)
+        advanceUntilIdle()
+        val saved = model.uiState.value.history
+        model.onInputChanged("Next draft")
+        assertEquals(saved, model.uiState.value.history)
+        model.requestAnalysis(false)
+        model.onPermissionResult(false)
+        assertEquals(saved, model.uiState.value.history)
+        handler = { throw ApiException.Connection(IOException()) }
+        model.requestAnalysis(true)
+        advanceUntilIdle()
+        assertEquals(saved, model.uiState.value.history)
+        assertEquals("Next draft", model.uiState.value.input)
+    }
+
+    @Test
+    fun newViewModelStartsWithEmptyHistory() = runTest(dispatcher) {
+        model.onInputChanged("Successful entry")
+        model.requestAnalysis(true)
+        advanceUntilIdle()
+        val freshModel = JournalViewModel(object : JournalApi {
+            override suspend fun analyze(request: AnalyzeRequest) = result
+        })
+        assertTrue(freshModel.uiState.value.history.isEmpty())
+        assertTrue(freshModel.uiState.value.input.isEmpty())
     }
 }

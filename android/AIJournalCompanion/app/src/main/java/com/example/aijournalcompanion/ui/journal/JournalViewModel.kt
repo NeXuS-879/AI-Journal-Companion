@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.aijournalcompanion.network.ApiException
 import com.example.aijournalcompanion.network.JournalApi
 import com.example.aijournalcompanion.network.model.AnalyzeRequest
+import com.example.aijournalcompanion.model.JournalEntry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,7 +66,19 @@ class JournalViewModel(private val api: JournalApi) : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = api.analyze(request)
-                mutableState.update { it.copy(isLoading = false, result = response) }
+                // Create identity once, outside the retryable StateFlow update lambda.
+                val entry = JournalEntry(
+                    text = request.text,
+                    emotion = response.emotion,
+                    advice = response.advice,
+                )
+                mutableState.update {
+                    it.copy(
+                        isLoading = false,
+                        result = response,
+                        history = listOf(entry) + it.history,
+                    )
+                }
             } catch (cancelled: CancellationException) {
                 mutableState.update { it.copy(isLoading = false) }
                 throw cancelled

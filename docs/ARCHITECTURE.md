@@ -4,7 +4,7 @@
 
 This document defines the planned architecture for the AI Journal Companion OOP 3 assessment. It translates the supplied planning document into module boundaries that support incremental delivery, visible OOP design, independently testable custom algorithms, and REST/JSON communication.
 
-The current implementation includes the repository foundation, a Kotlin and Jetpack Compose journal screen, ViewModel state management, Kotlin API models and an HTTP client, a validated FastAPI analysis contract, and local Ollama integration using `gemma:2b`. Android input, permission prompting, analysis and result presentation are connected; journal history is the next development increment.
+The current implementation includes the repository foundation, a Kotlin and Jetpack Compose journal screen, ViewModel state management, in-memory history, Kotlin API models and an HTTP client, a validated FastAPI analysis contract, and local Ollama integration using `gemma:2b`. Custom sorting is the next development increment.
 
 ## System context
 
@@ -42,7 +42,9 @@ The backend contains explicit API models, an analysis service boundary, route te
 
 The ViewModel validates input, pauses submission for a permission decision when required, then launches the API request in `viewModelScope`. The client runs blocking HTTP on IO. Busy state is set synchronously to prevent duplicate taps; input is temporarily disabled to keep a pending response tied to its submitted text. Failed requests retain the draft and permit retry. Editing after completion clears stale results/errors. Coroutine cancellation is rethrown rather than presented as a server error.
 
-Draft and result are held only in ViewModel memory, survive configuration changes, and are not persisted across process death. Journal history remains a future increment.
+Draft, result and history are held only in ViewModel memory, survive configuration changes, and are not persisted across process death. `model/JournalEntry.kt` represents a completed analysis with its submitted text, emotion, advice, UUID and creation timestamp. The ViewModel creates a single entry only after API success and prepends it to a new read-only list in `JournalUiState`; errors, permission denial and draft editing leave the previous history unchanged.
+
+`JournalScreen` renders the form, history heading/empty state and stable-keyed entry cards in one LazyColumn. `JournalEntryCard` formats timestamps in the device timezone and displays each entry's text, emotion/emoji and advice. The lazy list supports long histories without eagerly composing every entry. Insertion order is newest first; this uses no sorting library and does not substitute for the three custom sorting algorithms required in later work. IDs distinguish intentional repeated submissions and will support later deletion. No persistence layer is introduced.
 
 ### Implemented Android networking boundary
 
@@ -146,8 +148,8 @@ All strategies should share consistent inputs and outputs so behavioural and per
 1. Repository, documentation, virtual environment, Android baseline, and minimal FastAPI status route. Completed.
 2. Pydantic request/response contract and a tested `POST /analyze` boundary without Android coupling. Completed.
 3. Ollama `gemma:2b` client, controlled prompt, response validation, and backend error handling. Completed.
-4. Kotlin and Jetpack Compose core journal workflow and in-memory model.
-5. Android-to-FastAPI REST/JSON integration.
+4. Kotlin and Jetpack Compose core journal workflow and in-memory model. Completed.
+5. Android-to-FastAPI REST/JSON integration. Completed.
 6. Custom sorting algorithms and selectable controls.
 7. Binary Tree, HashMap, and Doubly Linked List search and selectable controls.
 8. Compose Canvas pie chart, drag-and-drop deletion, and local HTML help.

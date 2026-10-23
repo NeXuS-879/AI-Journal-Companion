@@ -58,3 +58,12 @@ These instructions apply to the entire repository. They preserve the mandatory O
 - Keep the local HTML help consistent with actual UI controls and limitations.
 - Clearly state that journal history is in-memory for the current assessment scope.
 
+## Assessment test report
+
+- Maintain `docs/AI_Journal_Companion_Test_Report.docx` after each meaningful implementation and verification increment.
+- Use the supplied, unchanged `docs/templates/AT2_Test_Report_Template.docx` as the formatting source. Preserve its header, footer, logo, column labels and styles.
+- Update the stable test IDs, expected/actual results, status, execution date and evidence references in `docs/testing/test_report_cases.json`, then regenerate with `scripts/update_test_report.py` using the document runtime and visually verify the Word report.
+- Preserve existing test IDs; add cases for new features and regressions as needed. Mark unimplemented or unexecuted checks `Not run`; never promote a planned test to `Pass` from code inspection alone.
+- Distinguish automated fixtures, live integration checks and manual checks. Keep detailed commands, defects and retest evidence in the phase verification documents.
+- Keep student identity and campus placeholders until the user supplies those details. Do not overwrite edits made directly in the report without reconciling them with the JSON source first.
+

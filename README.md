@@ -92,7 +92,9 @@ The Android application opens a journal entry screen with an `OutlinedTextField`
 
 Analyze now requests local network permission when required, sends the journal to FastAPI, and displays the returned emotion, emoji, and advice. `JournalViewModel` owns immutable input, loading, result, and error state exposed through StateFlow. Compose collects this state with lifecycle awareness. During analysis a progress indicator appears and submission/input controls are disabled to prevent duplicate requests; the screen remains scrollable. Errors retain the draft so the user can retry with Analyze.
 
-Draft and result remain in ViewModel memory across activity recreation (such as rotation), but are not persisted after process death or a new app session. Changing the draft clears its previous result. Journal history is a future increment.
+Draft, result and journal history remain in ViewModel memory across activity recreation (such as rotation), but are not persisted after process death or a new app session. Changing the draft clears its previous result without removing saved entries.
+
+Each successful analysis adds a `JournalEntry` containing the trimmed submitted text, emotion, advice, stable ID and timestamp. Scroll below the form to see the session history, newest first. Failures and denied permissions do not add entries. Repeated text can be intentionally submitted as a separate entry with a distinct ID. A lazy list renders history cards as they become visible; there is no database or disk storage.
 
 ### Android API client
 
@@ -138,11 +140,11 @@ The instrumented networking/live tests grant the local network permission throug
 - Kotlin and Jetpack Compose journal input screen with validation and Analyze control
 - Separate Kotlin API models, a suspend API interface, and an HTTP/JSON client for `POST /analyze`
 - ViewModel/StateFlow input, loading, result and error management; local-network permission prompting; real Analyze-button integration and emotion/emoji/advice display
+- In-memory journal history with timestamped entry cards, newest-first order, and configuration-change retention
 - Architecture and requirements documentation based on the supplied planning document
 
 Not yet implemented:
 
-- In-memory journal history and entry management
 - Required sorting, searching, data structures, chart, drag-and-drop, and local HTML help
 
 ## Assessment constraints
@@ -151,6 +153,8 @@ The required technology and features are recorded in [AGENTS.md](AGENTS.md). In 
 
 ## Documentation
 
+- [Working assessment test report](docs/AI_Journal_Companion_Test_Report.docx) - populated from the supplied Word template and maintained after tested development increments. Future features remain marked `Not run`.
+- [Test report maintenance](docs/testing/README.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Requirements](docs/REQUIREMENTS.md)
 - Planning source: `docs/CITEMS-APP-001_v1.0_AI_Journal_Companion_Planning.docx`

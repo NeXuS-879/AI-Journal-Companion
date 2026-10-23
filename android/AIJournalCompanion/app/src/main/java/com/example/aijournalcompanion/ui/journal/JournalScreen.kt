@@ -7,12 +7,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -67,6 +69,41 @@ fun JournalScreen(
     onInputChanged: (String) -> Unit,
     onAnalyze: () -> Unit,
 ) {
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier.padding(innerPadding).fillMaxSize().imePadding()
+                .testTag("journal_feed"),
+            contentPadding = PaddingValues(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            item(key = "journal_form") {
+                JournalForm(state, onInputChanged, onAnalyze)
+            }
+            item(key = "history_header") {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        stringResource(R.string.history_title, state.history.size),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    Text(stringResource(R.string.history_session_notice), style = MaterialTheme.typography.bodySmall)
+                }
+            }
+            if (state.history.isEmpty()) {
+                item(key = "history_empty") {
+                    Text(stringResource(R.string.history_empty))
+                }
+            }
+            items(state.history, key = { it.id }) { entry -> JournalEntryCard(entry) }
+        }
+    }
+}
+
+@Composable
+private fun JournalForm(
+    state: JournalUiState,
+    onInputChanged: (String) -> Unit,
+    onAnalyze: () -> Unit,
+) {
     val inputError = when (state.inputError) {
         JournalInputError.EMPTY -> stringResource(R.string.journal_empty_error)
         JournalInputError.TOO_LONG -> stringResource(
@@ -74,60 +111,54 @@ fun JournalScreen(
         )
         null -> null
     }
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding).fillMaxSize().imePadding()
-                .verticalScroll(rememberScrollState()).padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.journal_intro), style = MaterialTheme.typography.bodyLarge)
+        OutlinedTextField(
+            value = state.input,
+            onValueChange = onInputChanged,
+            enabled = !state.isBusy,
+            label = { Text(stringResource(R.string.journal_label)) },
+            placeholder = { Text(stringResource(R.string.journal_placeholder)) },
+            supportingText = {
+                Text(inputError ?: stringResource(
+                    R.string.journal_character_count,
+                    state.characterCount, AnalyzeRequest.MAX_TEXT_LENGTH,
+                ))
+            },
+            isError = inputError != null,
+            minLines = 6,
+            maxLines = 10,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Button(
+            onClick = onAnalyze, enabled = !state.isBusy,
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
-            Text(stringResource(R.string.journal_intro), style = MaterialTheme.typography.bodyLarge)
-            OutlinedTextField(
-                value = state.input,
-                onValueChange = onInputChanged,
-                enabled = !state.isBusy,
-                label = { Text(stringResource(R.string.journal_label)) },
-                placeholder = { Text(stringResource(R.string.journal_placeholder)) },
-                supportingText = {
-                    Text(inputError ?: stringResource(
-                        R.string.journal_character_count,
-                        state.characterCount, AnalyzeRequest.MAX_TEXT_LENGTH,
-                    ))
-                },
-                isError = inputError != null,
-                minLines = 6,
-                maxLines = 10,
-                modifier = Modifier.fillMaxWidth(),
+            Text(stringResource(if (state.isLoading) R.string.analyzing else R.string.analyze))
+        }
+        if (state.isLoading) {
+            CircularProgressIndicator()
+            Text(
+                stringResource(R.string.analysis_loading),
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
             )
-            Button(
-                onClick = onAnalyze, enabled = !state.isBusy,
-                modifier = Modifier.fillMaxWidth(),
+        }
+        state.error?.let { error ->
+            Text(
+                stringResource(error.messageResource()),
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            )
+        }
+        state.result?.let { result ->
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
             ) {
-                Text(stringResource(if (state.isLoading) R.string.analyzing else R.string.analyze))
-            }
-            if (state.isLoading) {
-                CircularProgressIndicator()
-                Text(
-                    stringResource(R.string.analysis_loading),
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                )
-            }
-            state.error?.let { error ->
-                Text(
-                    stringResource(error.messageResource()),
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                )
-            }
-            state.result?.let { result ->
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                ) {
-                    Text(stringResource(R.string.analysis_result), style = MaterialTheme.typography.titleMedium)
-                    Text("${result.emotion.emoji()} ${result.emotion.name}", style = MaterialTheme.typography.headlineSmall)
-                    Text(result.advice, style = MaterialTheme.typography.bodyLarge)
-                }
+                Text(stringResource(R.string.analysis_result), style = MaterialTheme.typography.titleMedium)
+                Text("${result.emotion.emoji()} ${result.emotion.name}", style = MaterialTheme.typography.headlineSmall)
+                Text(result.advice, style = MaterialTheme.typography.bodyLarge)
             }
         }
     }
@@ -145,7 +176,7 @@ private fun JournalAnalysisError.messageResource(): Int = when (this) {
 }
 
 /** Presentation mapping stays out of the REST enum and JSON client. */
-private fun Emotion.emoji(): String = when (this) {
+internal fun Emotion.emoji(): String = when (this) {
     Emotion.JOY -> "😊"
     Emotion.SADNESS -> "😢"
     Emotion.ANGER -> "😠"
