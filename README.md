@@ -88,9 +88,11 @@ Open `android/AIJournalCompanion` as the project root in Android Studio. From th
 .\gradlew.bat assembleDebug
 ```
 
-The Android application now opens a journal entry screen with an `OutlinedTextField`, character count, and Analyze button. It rejects empty, whitespace-only, and over-limit entries using the backend's 5,000-character limit after trimming. Input is held only in the current screen's memory.
+The Android application opens a journal entry screen with an `OutlinedTextField`, character count, and Analyze button. It rejects empty, whitespace-only, and over-limit entries using the backend's 5,000-code-point limit after trimming.
 
-The Analyze button still displays an explicit notice that analysis is not connected. The independent Kotlin API models and networking client are now implemented and tested; ViewModel state, permission prompting, button wiring, and emotion/advice presentation are the next increment.
+Analyze now requests local network permission when required, sends the journal to FastAPI, and displays the returned emotion, emoji, and advice. `JournalViewModel` owns immutable input, loading, result, and error state exposed through StateFlow. Compose collects this state with lifecycle awareness. During analysis a progress indicator appears and submission/input controls are disabled to prevent duplicate requests; the screen remains scrollable. Errors retain the draft so the user can retry with Analyze.
+
+Draft and result remain in ViewModel memory across activity recreation (such as rotation), but are not persisted after process death or a new app session. Changing the draft clears its previous result. Journal history is a future increment.
 
 ### Android API client
 
@@ -106,7 +108,7 @@ For a physical device on the same trusted network, configure the computer's LAN 
 
 For physical-device access only, run FastAPI on a reachable interface using `python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000` and allow the port on the trusted Windows private network. Never expose the development service publicly. Do not commit machine-specific addresses.
 
-Debug builds permit HTTP for the local assessment server; release builds block cleartext traffic. Because this project targets SDK 37, Android 17 requires the declared `ACCESS_LOCAL_NETWORK` runtime permission before client calls. The client reports `ApiException.PermissionRequired` if permission has not been granted; the UI permission request will be implemented with the ViewModel/Analyze-button integration. Earlier Android versions need only the normal `INTERNET` declaration.
+Debug builds permit HTTP for the local assessment server; release builds block cleartext traffic. Because this project targets SDK 37, Android 17 requires the declared `ACCESS_LOCAL_NETWORK` runtime permission before client calls. Analyze checks this permission and opens Android's permission dialog when needed. Granting permission resumes the pending submission; denial shows an explanation without sending the entry. If repeated denial prevents the dialog from appearing, allow Nearby devices in this app's Android settings. Earlier Android versions need only the normal `INTERNET` declaration.
 
 The client has a 5-second connect timeout and 130-second read timeout to allow the backend's 120-second Ollama request. Cancellation is propagated and connections are closed, but a blocked HTTP operation can take until its timeout to return.
 
@@ -122,7 +124,7 @@ The default suite uses local HTTP fixtures and skips the optional live inference
 .\gradlew.bat connectedDebugAndroidTest '-Pandroid.testInstrumentationRunnerArguments.liveBackend=true'
 ```
 
-The instrumented networking tests grant the local network permission through test automation; that grant is not an implemented user-facing permission flow.
+The instrumented networking/live tests grant the local network permission through test automation. The app also has its own user-facing permission flow, and ViewModel tests cover pending, granted and denied decisions. The optional live screen test submits through the actual Analyze button and verifies state retention across activity recreation.
 
 ## Current scope
 
@@ -135,12 +137,12 @@ The instrumented networking tests grant the local network permission through tes
 - Backend contract tests
 - Kotlin and Jetpack Compose journal input screen with validation and Analyze control
 - Separate Kotlin API models, a suspend API interface, and an HTTP/JSON client for `POST /analyze`
+- ViewModel/StateFlow input, loading, result and error management; local-network permission prompting; real Analyze-button integration and emotion/emoji/advice display
 - Architecture and requirements documentation based on the supplied planning document
 
 Not yet implemented:
 
-- Journal result UI and in-memory history
-- Android ViewModel, local-network permission prompt, and Analyze-button/API integration
+- In-memory journal history and entry management
 - Required sorting, searching, data structures, chart, drag-and-drop, and local HTML help
 
 ## Assessment constraints

@@ -7,5 +7,15 @@
     <string name="journal_empty_error">Please write a journal entry before analyzing.</string>
     <string name="journal_length_error">Keep your entry to %1$d characters or fewer.</string>
     <string name="analyze">Analyze</string>
-    <string name="analysis_not_connected">Analysis is not available in this app version yet. Your entry has not been sent.</string>
+    <string name="analyzing">Analyzing…</string>
+    <string name="analysis_loading">Reflecting on your entry. This may take a moment.</string>
+    <string name="analysis_result">Your reflection</string>
+    <string name="analysis_connection_error">Cannot reach the backend. Check that FastAPI is running and your connection is available, then tap Analyze to retry.</string>
+    <string name="analysis_timeout_error">Analysis took too long. Please try again.</string>
+    <string name="analysis_permission_error">Local network access is needed to analyze your entry. Tap Analyze to allow access. If the prompt no longer appears, allow Nearby devices in Android Settings for this app.</string>
+    <string name="analysis_invalid_entry">The backend could not accept this entry. Please check your text and try again.</string>
+    <string name="analysis_unavailable_error">Analysis is unavailable. Check that Ollama is running with gemma:2b, then try again.</string>
+    <string name="analysis_response_error">The analysis result could not be read. Please try again.</string>
+    <string name="analysis_server_error">The backend could not complete the request. Please try again.</string>
+    <string name="analysis_unexpected_error">Something went wrong. Your entry is still here; please try again.</string>
 </resources>

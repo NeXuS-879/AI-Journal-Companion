@@ -60,9 +60,11 @@ The repository currently provides:
 - `AGENTS.md`, `README.md`, `.gitignore`, `docs`, `backend`, and `android` exist.
 - `android/AIJournalCompanion` contains a Kotlin and Jetpack Compose Android Studio project with a journal input screen, character count, and Analyze button.
 - Android input validation rejects blank and whitespace-only entries and entries longer than 5,000 characters after trimming (partial implementation of FR-01 and FR-12).
-- The Android screen displays an explicit notice when valid input is submitted because the Analyze button is not yet wired to the API client and analysis result presentation is not implemented yet.
-- Separate Kotlin request/response models, a six-label emotion enum, and an injectable suspend HTTP client now implement the Android REST/JSON boundary independently of the UI (partial FR-02 and FR-10). The screen is not wired to this client yet.
-- The client validates JSON fields and advice, performs requests on an IO dispatcher, and distinguishes connection, timeout, HTTP, permission, and invalid-response failures. Android 17 local-network runtime permission prompting remains part of the next UI increment.
+- Android Analyze now calls the API client through an activity-scoped ViewModel and displays the real emotion, emoji and advice (FR-02, FR-03 and FR-10).
+- Immutable StateFlow exposes input, permission-pending, loading, result, validation and error state. Compose uses lifecycle-aware collection. Busy controls prevent duplicate submission; request errors preserve text and permit retry (FR-12, NFR-03).
+- Separate Kotlin request/response models, a six-label emotion enum, and an injectable suspend HTTP client implement the Android REST/JSON boundary. The client validates responses and performs requests on an IO dispatcher.
+- On Android 17 a valid submission prompts for local-network permission when required. Denial prevents the request and shows guidance; grant resumes the pending submission.
+- Draft and result survive activity recreation in ViewModel memory. In-memory history (FR-04), persistence, algorithms and additional interactions are not part of this increment.
 - `backend/.venv` exists and contains FastAPI, Uvicorn, Requests, and Pydantic.
 - Backend runtime and test dependency files record the direct Python dependencies.
 - `backend/main.py` defines a FastAPI application.
