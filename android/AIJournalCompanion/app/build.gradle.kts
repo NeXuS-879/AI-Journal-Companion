@@ -17,6 +17,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Override with -PjournalBackendUrl=http://<computer-ip>:8000/ for a device.
+        val backendUrl = providers.gradleProperty("journalBackendUrl")
+            .getOrElse("http://10.0.2.2:8000/")
+        buildConfigField(
+            "String",
+            "BACKEND_BASE_URL",
+            "\"${backendUrl.replace("\\", "\\\\").replace("\"", "\\\"")}\"",
+        )
     }
 
     buildTypes {
@@ -32,10 +41,12 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
+    implementation(libs.kotlinx.coroutines.android)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

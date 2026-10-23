@@ -60,7 +60,9 @@ The repository currently provides:
 - `AGENTS.md`, `README.md`, `.gitignore`, `docs`, `backend`, and `android` exist.
 - `android/AIJournalCompanion` contains a Kotlin and Jetpack Compose Android Studio project with a journal input screen, character count, and Analyze button.
 - Android input validation rejects blank and whitespace-only entries and entries longer than 5,000 characters after trimming (partial implementation of FR-01 and FR-12).
-- The first Android UI increment displays an explicit notice when valid input is submitted because Android networking and analysis result presentation are not implemented yet.
+- The Android screen displays an explicit notice when valid input is submitted because the Analyze button is not yet wired to the API client and analysis result presentation is not implemented yet.
+- Separate Kotlin request/response models, a six-label emotion enum, and an injectable suspend HTTP client now implement the Android REST/JSON boundary independently of the UI (partial FR-02 and FR-10). The screen is not wired to this client yet.
+- The client validates JSON fields and advice, performs requests on an IO dispatcher, and distinguishes connection, timeout, HTTP, permission, and invalid-response failures. Android 17 local-network runtime permission prompting remains part of the next UI increment.
 - `backend/.venv` exists and contains FastAPI, Uvicorn, Requests, and Pydantic.
 - Backend runtime and test dependency files record the direct Python dependencies.
 - `backend/main.py` defines a FastAPI application.

@@ -4,7 +4,7 @@
 
 This document defines the planned architecture for the AI Journal Companion OOP 3 assessment. It translates the supplied planning document into module boundaries that support incremental delivery, visible OOP design, independently testable custom algorithms, and REST/JSON communication.
 
-The current implementation includes the repository foundation, a Kotlin and Jetpack Compose journal input screen, a validated FastAPI analysis contract, and local Ollama integration using `gemma:2b`. Android-to-FastAPI networking, result presentation, and journal history are the next development increments.
+The current implementation includes the repository foundation, a Kotlin and Jetpack Compose journal input screen, separate Kotlin API models and an HTTP client, a validated FastAPI analysis contract, and local Ollama integration using `gemma:2b`. Android ViewModel/button integration, permission prompting, result presentation, and journal history are the next development increments.
 
 ## System context
 
@@ -38,7 +38,19 @@ AI-Journal-Companion/
 
 The backend contains explicit API models, an analysis service boundary, route tests, dependency files, and an ignored `.venv` virtual environment. The Android project is a single-module Compose application. `MainActivity` hosts `ui/journal/JournalScreen.kt`, which separates temporary input state and validation from a stateless form. The form contains the required `OutlinedTextField` and Analyze button. Screen text lives in Android string resources.
 
-This first UI increment keeps draft text only in screen memory and checks the same trimmed 5,000-character limit as the backend. Valid submission displays an explicit not-connected notice. Network calls, ViewModel state, results, and session history remain future increments; no generated analysis is shown by this screen yet.
+The UI keeps draft text only in screen memory and checks the same trimmed 5,000-character limit as the backend. Valid submission displays an explicit not-connected notice. The networking client is implemented independently, but ViewModel state, button/API wiring, results, and session history remain future increments; no generated analysis is shown by this screen yet.
+
+### Implemented Android networking boundary
+
+- `network/model`: validated request and response DTOs and the backend-compatible emotion enum. Request and advice limits count Unicode code points like Python.
+- `JournalApi`: suspend interface for injection into the future ViewModel and test doubles.
+- `HttpJournalApi`: configurable `POST /analyze` transport using Android's `HttpURLConnection`, explicit UTF-8 JSON headers, timeouts, no automatic redirects, bounded response reads, and connection cleanup. Blocking HTTP runs on an injected IO dispatcher.
+- `AnalysisJsonCodec`: request escaping and strict response field/type/enum/advice validation, separate from HTTP and presentation.
+- `ApiException`: typed connection, timeout, permission, HTTP-status, and malformed-response failures. Raw server bodies and journal text are not embedded in user-facing exceptions.
+
+The default endpoint uses the emulator host alias `10.0.2.2:8000`. `journalBackendUrl` is a local Gradle property override for physical-device testing. Debug manifest configuration permits local HTTP; release builds disallow cleartext traffic. The main manifest declares `INTERNET` and `ACCESS_LOCAL_NETWORK`. On Android 17 the client checks local network permission before connecting; UI permission prompting belongs to the next integration increment.
+
+Calling `HttpJournalApi(applicationContext).analyze(AnalyzeRequest(text))` returns a validated `AnalyzeResponse` after the caller obtains any required runtime permission. It does not store entries. Cancellation propagates; blocking socket work is bounded by connect/read timeouts rather than immediately aborted by cancellation.
 
 ## Planned Android architecture
 

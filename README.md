@@ -90,13 +90,39 @@ Open `android/AIJournalCompanion` as the project root in Android Studio. From th
 
 The Android application now opens a journal entry screen with an `OutlinedTextField`, character count, and Analyze button. It rejects empty, whitespace-only, and over-limit entries using the backend's 5,000-character limit after trimming. Input is held only in the current screen's memory.
 
-This first UI increment does not send requests yet: Analyze displays an explicit notice that analysis is not connected. Kotlin API models, networking, ViewModel state, and emotion/advice presentation are the next increment.
+The Analyze button still displays an explicit notice that analysis is not connected. The independent Kotlin API models and networking client are now implemented and tested; ViewModel state, permission prompting, button wiring, and emotion/advice presentation are the next increment.
+
+### Android API client
+
+`network/model` contains `AnalyzeRequest`, `AnalyzeResponse`, and the six-label `Emotion` enum. `network/JournalApi.kt` defines the injectable API interface. `HttpJournalApi` sends UTF-8 JSON to `POST /analyze` on `Dispatchers.IO`, validates the response, and reports HTTP, timeout, connection, permission, and invalid-response errors separately. It sends no requests until `analyze()` is called.
+
+The default backend address is `http://10.0.2.2:8000/` (the Android emulator's route to this computer). Start FastAPI normally from the repository root. The emulator's `127.0.0.1` refers to the emulator itself, not the computer.
+
+For a physical device on the same trusted network, configure the computer's LAN address in Android Studio's Gradle settings, or build with a local property override:
+
+```powershell
+.\gradlew.bat assembleDebug '-PjournalBackendUrl=http://YOUR_COMPUTER_LAN_IP:8000/'
+```
+
+For physical-device access only, run FastAPI on a reachable interface using `python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000` and allow the port on the trusted Windows private network. Never expose the development service publicly. Do not commit machine-specific addresses.
+
+Debug builds permit HTTP for the local assessment server; release builds block cleartext traffic. Because this project targets SDK 37, Android 17 requires the declared `ACCESS_LOCAL_NETWORK` runtime permission before client calls. The client reports `ApiException.PermissionRequired` if permission has not been granted; the UI permission request will be implemented with the ViewModel/Analyze-button integration. Earlier Android versions need only the normal `INTERNET` declaration.
+
+The client has a 5-second connect timeout and 130-second read timeout to allow the backend's 120-second Ollama request. Cancellation is propagated and connections are closed, but a blocked HTTP operation can take until its timeout to return.
 
 With an emulator or device connected, run the Compose interaction tests from the Android project root:
 
 ```powershell
 .\gradlew.bat connectedDebugAndroidTest
 ```
+
+The default suite uses local HTTP fixtures and skips the optional live inference check. With FastAPI and Ollama running, opt in to an actual emulator-to-backend analysis:
+
+```powershell
+.\gradlew.bat connectedDebugAndroidTest '-Pandroid.testInstrumentationRunnerArguments.liveBackend=true'
+```
+
+The instrumented networking tests grant the local network permission through test automation; that grant is not an implemented user-facing permission flow.
 
 ## Current scope
 
@@ -108,12 +134,13 @@ With an emulator or device connected, run the Compose interaction tests from the
 - Constrained prompt and Pydantic JSON-schema response validation
 - Backend contract tests
 - Kotlin and Jetpack Compose journal input screen with validation and Analyze control
+- Separate Kotlin API models, a suspend API interface, and an HTTP/JSON client for `POST /analyze`
 - Architecture and requirements documentation based on the supplied planning document
 
 Not yet implemented:
 
 - Journal result UI and in-memory history
-- Android-to-FastAPI networking
+- Android ViewModel, local-network permission prompt, and Analyze-button/API integration
 - Required sorting, searching, data structures, chart, drag-and-drop, and local HTML help
 
 ## Assessment constraints
