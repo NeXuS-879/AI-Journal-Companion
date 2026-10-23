@@ -9,6 +9,8 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.assertIsNotEnabled
 import com.example.aijournalcompanion.model.JournalEntry
 import com.example.aijournalcompanion.network.model.Emotion
 import com.example.aijournalcompanion.ui.journal.JournalScreen
@@ -23,9 +25,10 @@ class JournalHistoryTest {
     @Test
     fun emptyHistoryShowsSessionLimitation() {
         rule.setContent { AIJournalCompanionTheme { JournalScreen(JournalUiState(), {}, {}) } }
+        rule.onNodeWithTag("history_tab").performClick()
         rule.onNodeWithTag("journal_feed")
             .performScrollToNode(hasText("Your analyzed entries will appear here."))
-        rule.onNodeWithText("Journal history (0)").assertIsDisplayed()
+        rule.onNodeWithText("0 entries").assertIsDisplayed()
         rule.onNodeWithText("History is kept in memory for this session.", substring = true)
             .assertIsDisplayed()
     }
@@ -45,6 +48,7 @@ class JournalHistoryTest {
                 JournalScreen(JournalUiState(history = entries), {}, {})
             }
         }
+        rule.onNodeWithTag("history_tab").performClick()
         rule.onNodeWithTag("journal_feed")
             .performScrollToNode(hasTestTag("journal_entry_entry-30"))
         rule.onNodeWithText("Journal entry 30").assertIsDisplayed()
@@ -54,5 +58,18 @@ class JournalHistoryTest {
             .performScrollToNode(hasTestTag("journal_entry_entry-1"))
         rule.onNodeWithText("Journal entry 1").assertIsDisplayed()
         rule.onNodeWithText("Advice: Advice for entry 1.").assertIsDisplayed()
+    }
+
+    @Test
+    fun futureControlsAreDisabledAndDoNotChangeHistory() {
+        rule.setContent { AIJournalCompanionTheme { JournalScreen(JournalUiState(), {}, {}) } }
+        rule.onNodeWithText("Help ? (soon)").assertIsNotEnabled()
+        rule.onNodeWithTag("history_tab").performClick()
+        listOf("future_search", "future_sort", "future_chart", "future_delete").forEach {
+            rule.onNodeWithTag(it).assertIsNotEnabled()
+        }
+        rule.onNodeWithText("All emotions").assertIsNotEnabled()
+        rule.onNodeWithText("Binary Tree").assertIsNotEnabled()
+        rule.onNodeWithText("Bubble Sort").assertIsNotEnabled()
     }
 }

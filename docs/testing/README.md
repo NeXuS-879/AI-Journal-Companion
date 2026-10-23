@@ -6,7 +6,9 @@ The first populated version records verification completed through commit `a09af
 
 ## Updating after development
 
-The in-memory history increment was verified on 23 October 2026 against commit `a09afd8` plus working-tree changes. The report now contains 15 passed cases and 10 not run. The current Android retest passed 16 JVM tests and 15 emulator tests, including live multi-entry analysis and activity recreation. The 16 backend results are retained from the previous phase, not a new backend execution. See `docs/ANDROID_HISTORY_VERIFICATION.md`.
+The in-memory history increment was verified on 23 October 2026 against commit `a09afd8` plus working-tree changes (committed as `ec8d69e`). At that stage the report contained 15 passed cases and 10 not run. That Android retest passed 16 JVM tests and 15 emulator tests, including live multi-entry analysis and activity recreation. The 16 backend results were retained from the previous phase, not a new backend execution. See `docs/ANDROID_HISTORY_VERIFICATION.md`.
+
+The wireframe UI increment adds TC-26 and TC-27 without promoting the future-feature cases. Its report records 17 passed grouped cases and 10 not run, with 16 JVM tests and 17 emulator tests passing. The backend counts and original screenshot E1 remain historical. See `docs/ANDROID_WIREFRAME_VERIFICATION.md` for the new navigation, retained reflection and disabled-placeholder checks.
 
 1. Run the checks appropriate to the implemented change and retain actual results, date, screenshots and defects. Do not infer passing status from implementation alone.
 2. Edit `test_report_cases.json`. Preserve existing case IDs. Each case has five fields in order: ID, description, expected result, actual result and status (`Pass`, `Fail`, or `Not run`). Distinguish fixtures from real model calls and manual interaction.
@@ -25,7 +27,9 @@ Student name, ID, campus and developer-name fields remain placeholders. Supply t
 - `docs/ANDROID_NETWORK_VERIFICATION.md`: API client tests and live inference.
 - `docs/ANDROID_VIEWMODEL_VERIFICATION.md`: state, UI integration, activity recreation and manual permission check.
 - `docs/ANDROID_HISTORY_VERIFICATION.md`: in-memory entries, ordering, failure preservation, lazy scrolling and live history recreation.
+- `docs/ANDROID_WIREFRAME_VERIFICATION.md`: wireframe presentation, two-tab navigation, saved tab state and inactive future controls.
 - `docs/screenshots/journal-analysis.png`: successful Android analysis result (E1).
+- `docs/screenshots/wireframe-journal.png` and `wireframe-history.png`: updated two-tab UI with one real analysis of synthetic text.
 - `backend/tests`: automated backend contract and Ollama fixture tests.
 
 The working report does not replace the final test/debug narrative, defect log, performance evaluation, user manual or technical documentation required by the assessment. Add further cases and evidence as those deliverables are completed.

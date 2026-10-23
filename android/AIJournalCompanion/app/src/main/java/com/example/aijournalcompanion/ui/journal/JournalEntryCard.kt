@@ -21,14 +21,12 @@ import java.time.format.FormatStyle
 /** Reusable history item; a stable ID will also support later drag-to-delete. */
 @Composable
 fun JournalEntryCard(entry: JournalEntry) {
-    val timestamp = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-        .withZone(ZoneId.systemDefault()).format(entry.createdAt)
     Card(modifier = Modifier.fillMaxWidth().testTag("journal_entry_${entry.id}")) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(timestamp, style = MaterialTheme.typography.labelMedium)
+            Text(entry.formattedTimestamp(), style = MaterialTheme.typography.labelMedium)
             Text(entry.text, style = MaterialTheme.typography.bodyLarge)
             Text(
                 stringResource(R.string.history_emotion, entry.emotion.emoji(), entry.emotion.name),
@@ -41,3 +39,7 @@ fun JournalEntryCard(entry: JournalEntry) {
         }
     }
 }
+
+internal fun JournalEntry.formattedTimestamp(): String =
+    DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+        .withZone(ZoneId.systemDefault()).format(createdAt)

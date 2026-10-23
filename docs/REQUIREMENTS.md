@@ -66,6 +66,7 @@ The repository currently provides:
 - On Android 17 a valid submission prompts for local-network permission when required. Denial prevents the request and shows guidance; grant resumes the pending submission.
 - Draft, result and history survive activity recreation in ViewModel memory. Successful analyses add a `JournalEntry` with submitted text, emotion, advice, stable ID and timestamp; failures and denied permissions add nothing (FR-04).
 - The history list displays newest entries first with timestamped text/emotion/advice cards and a clear session-only limitation. A fresh ViewModel/process begins with empty history. Persistent storage remains outside scope; algorithms and additional interactions remain future work.
+- The supplied UI wireframe is retained under `docs/wireframes`. Journal and History are separate bottom-navigation tabs sharing ViewModel state. The Journal tab retains the latest successful reflection while editing another draft. Search/sort selectors, chart, Help and deletion controls are disabled future placeholders, not implementations of FR-05 through FR-09 or FR-11. History cards still display existing full content; detail popups are deferred.
 - `backend/.venv` exists and contains FastAPI, Uvicorn, Requests, and Pydantic.
 - Backend runtime and test dependency files record the direct Python dependencies.
 - `backend/main.py` defines a FastAPI application.

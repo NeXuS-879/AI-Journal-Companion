@@ -1,0 +1,97 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="8mD6LIbVLAq-JWEpUx5I">
+    <mxGraphModel dx="2049" dy="1126" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0" adaptiveColors="auto">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n1" parent="1" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;text;strokeColor=none;fillColor=none;fontSize=20;fontStyle=1;align=left;" value="AI Journal Companion — Mobile UI wireframe" vertex="1">
+          <mxGeometry height="35" width="820" x="20" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" parent="1" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;text;strokeColor=none;fillColor=none;fontStyle=1;" value="01  Journal / latest analysis" vertex="1">
+          <mxGeometry height="30" width="380" x="20" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" parent="1" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;text;strokeColor=none;fillColor=none;fontStyle=1;" value="02  Separate journal history" vertex="1">
+          <mxGeometry height="30" width="380" x="440" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="journal" parent="1" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;container=1;pointerEvents=0;fillColor=#f8fafc;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="600" width="380" x="20" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" parent="journal" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#e8eef8;fontStyle=1;" value="AI Journal Companion          Help ?" vertex="1">
+          <mxGeometry height="48" width="380" y="-6" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" parent="journal" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;text;strokeColor=none;fillColor=none;align=left;fontStyle=1;" value="How was your day?" vertex="1">
+          <mxGeometry height="30" width="348" x="16" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" parent="journal" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;align=left;verticalAlign=top;spacing=12;" value="Write your journal entry…&lt;br&gt;&lt;br&gt;&lt;br&gt;Multiline text input" vertex="1">
+          <mxGeometry height="110" width="348" x="16" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="n7" parent="journal" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#365d91;strokeColor=#365d91;fontColor=#ffffff;fontStyle=1;" value="Analyse entry" vertex="1">
+          <mxGeometry height="48" width="348" x="16" y="232" as="geometry" />
+        </mxCell>
+        <mxCell id="n8" parent="journal" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;text;strokeColor=none;fillColor=none;align=left;fontStyle=1;" value="Latest analysed entry" vertex="1">
+          <mxGeometry height="28" width="348" x="16" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="n9" parent="journal" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#edf1f7;align=left;spacing=10;" value="You · Today, 10:30&lt;br&gt;“I finished my assignment and feel proud.”" vertex="1">
+          <mxGeometry height="65" width="348" x="16" y="332" as="geometry" />
+        </mxCell>
+        <mxCell id="n10" parent="journal" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#e8f3ea;strokeColor=#9bbba2;align=left;spacing=12;" value="😊 JOY&lt;br&gt;&lt;b&gt;Emotion analysis&lt;/b&gt;&lt;br&gt;Take a moment to celebrate your progress." vertex="1">
+          <mxGeometry height="100" width="348" x="16" y="409" as="geometry" />
+        </mxCell>
+        <mxCell id="n11" parent="journal" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#e8eef8;fontStyle=1;" value="Journal  ●                     History  ○" vertex="1">
+          <mxGeometry height="48" width="356" x="12" y="538" as="geometry" />
+        </mxCell>
+        <mxCell id="history" parent="1" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;container=1;pointerEvents=0;fillColor=#f8fafc;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="600" width="380" x="440" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n12" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#e8eef8;fontStyle=1;" value="Journal history                    Help ?" vertex="1">
+          <mxGeometry height="48" width="380" y="-3" as="geometry" />
+        </mxCell>
+        <mxCell id="n13" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;align=left;spacing=10;" value="Emotion: All emotions  ▾" vertex="1">
+          <mxGeometry height="42" width="348" x="16" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n14" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;align=left;spacing=8;" value="Method: Binary Tree ▾" vertex="1">
+          <mxGeometry height="42" width="234" x="16" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="n15" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#e8eef8;" value="Search" vertex="1">
+          <mxGeometry height="42" width="104" x="260" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="n16" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;align=left;spacing=8;" value="Sort: Bubble Sort ▾" vertex="1">
+          <mxGeometry height="42" width="234" x="16" y="176" as="geometry" />
+        </mxCell>
+        <mxCell id="n17" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#e8eef8;" value="Sort" vertex="1">
+          <mxGeometry height="42" width="104" x="260" y="176" as="geometry" />
+        </mxCell>
+        <mxCell id="n18" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#e8eef8;" value="3 entries                       Show chart" vertex="1">
+          <mxGeometry height="34" width="348" x="16" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="n19" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;align=left;spacing=10;" value="⋮⋮  😊 JOY · Today, 10:30&lt;br&gt;“I finished my assignment…”&lt;br&gt;Tap to read entry and advice" vertex="1">
+          <mxGeometry height="78" width="348" x="16" y="274" as="geometry" />
+        </mxCell>
+        <mxCell id="n20" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;align=left;spacing=10;" value="⋮⋮  😔 SADNESS · Today, 09:15&lt;br&gt;“Today was harder than expected…”" vertex="1">
+          <mxGeometry height="64" width="348" x="16" y="362" as="geometry" />
+        </mxCell>
+        <mxCell id="n21" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;align=left;spacing=10;" value="⋮⋮  😐 NEUTRAL · Today, 08:00&lt;br&gt;“A quiet start to the day…”" vertex="1">
+          <mxGeometry height="64" width="348" x="16" y="436" as="geometry" />
+        </mxCell>
+        <mxCell id="n22" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;dashed=1;fillColor=#fff0ed;strokeColor=#bb8075;" value="Drop entry here to delete" vertex="1">
+          <mxGeometry height="28" width="348" x="16" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="n23" parent="history" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#e8eef8;fontStyle=1;" value="Journal  ○                     History  ●" vertex="1">
+          <mxGeometry height="40" width="356" x="12" y="546" as="geometry" />
+        </mxCell>
+        <mxCell id="n24" parent="1" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#fff7df;strokeColor=#d0bc84;align=left;spacing=10;" value="Navigation: switch screens without losing draft text. History stores this session only; the latest successful entry stays visible on Journal." vertex="1">
+          <mxGeometry height="52" width="800" x="20" y="705" as="geometry" />
+        </mxCell>
+        <mxCell id="n25" parent="1" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#edf1f7;align=left;spacing=10;" value="Compose layout: Scaffold + top app bar + bottom NavigationBar. Journal uses a scrollable Column; history uses LazyColumn. Keep controls ≥48 dp in implementation." vertex="1">
+          <mxGeometry height="56" width="800" x="20" y="769" as="geometry" />
+        </mxCell>
+        <mxCell id="n26" parent="1" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#edf1f7;align=left;spacing=10;" value="Popups: entry detail = full text + emotion + advice; chart = Canvas pie + labelled legend; Help = bundled HTML in WebView. Close returns to the same screen." vertex="1">
+          <mxGeometry height="56" width="800" x="20" y="837" as="geometry" />
+        </mxCell>
+        <mxCell id="n27" parent="1" style="html=1;whiteSpace=wrap;fontSize=14;fontColor=#243247;strokeColor=#a8b1be;fillColor=#ffffff;rounded=1;arcSize=12;fillColor=#edf1f7;align=left;spacing=10;" value="States: analysing = progress + disabled Analyse; error = message + retry, retain input; empty history/chart = clear guidance. Search choices: Binary Tree / HashMap / Doubly Linked List. Sort choices: Bubble / Insertion / Selection." vertex="1">
+          <mxGeometry height="72" width="800" x="20" y="905" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -34,24 +34,28 @@ class JournalLiveScreenTest {
         rule.onNodeWithText("Journal entry").performTextReplacement(entry)
         rule.activityRule.scenario.recreate()
         rule.onNodeWithText(entry).assertIsDisplayed()
-        rule.onNodeWithText("Analyze").performScrollTo().performClick()
+        rule.onNodeWithText("Analyse entry").performScrollTo().performClick()
         rule.waitUntil(150_000) {
-            rule.onAllNodesWithText("Your reflection").fetchSemanticsNodes().isNotEmpty()
+            rule.onAllNodesWithText("Emotion analysis").fetchSemanticsNodes().isNotEmpty()
         }
-        rule.onNodeWithText("Your reflection").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("Emotion analysis").performScrollTo().assertIsDisplayed()
         rule.activityRule.scenario.recreate()
-        rule.onNodeWithText("Your reflection").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithTag("journal_feed").performScrollToNode(hasText("Journal history (1)"))
-        rule.onNodeWithText("Journal history (1)").assertIsDisplayed()
+        rule.onNodeWithText("Emotion analysis").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("history_tab").performClick()
+        rule.onNodeWithTag("journal_feed").performScrollToNode(hasText("1 entry"))
+        rule.onNodeWithText("1 entry").assertIsDisplayed()
+        rule.activityRule.scenario.recreate()
+        rule.onNodeWithText("Journal history").assertIsDisplayed()
+        rule.onNodeWithTag("journal_tab").performClick()
         // A second successful request adds another entry; recreation must retain both.
-        rule.onNodeWithTag("journal_feed").performScrollToNode(hasText("Journal entry", substring = false))
-        rule.onNodeWithText("Journal entry").performTextReplacement("Today was calm and peaceful.")
-        rule.onNodeWithText("Analyze").performScrollTo().performClick()
+        rule.onNodeWithText("Journal entry").performScrollTo().performTextReplacement("Today was calm and peaceful.")
+        rule.onNodeWithText("Analyse entry").performScrollTo().performClick()
         rule.waitUntil(150_000) {
-            rule.onAllNodesWithText("Your reflection").fetchSemanticsNodes().isNotEmpty()
+            rule.onAllNodesWithText("Analyzing…").fetchSemanticsNodes().isEmpty()
         }
         rule.activityRule.scenario.recreate()
-        rule.onNodeWithTag("journal_feed").performScrollToNode(hasText("Journal history (2)"))
-        rule.onNodeWithText("Journal history (2)").assertIsDisplayed()
+        rule.onNodeWithTag("history_tab").performClick()
+        rule.onNodeWithTag("journal_feed").performScrollToNode(hasText("2 entries"))
+        rule.onNodeWithText("2 entries").assertIsDisplayed()
     }
 }

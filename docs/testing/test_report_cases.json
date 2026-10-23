@@ -1,7 +1,7 @@
 {
   "updated": "23 October 2026",
-  "source_commit": "a09afd8 + uncommitted history",
-  "summary": "Recorded passes: 16 backend. History retest: 16 Android unit and 15 emulator tests. Future features are Not run.",
+  "source_commit": "ec8d69e + UI working tree",
+  "summary": "Recorded: 16 backend passes. UI retest: 16 Android unit and 17 emulator passes. Future features are Not run.",
   "cases": [
     ["TC-01", "GET / status (backend test)", "HTTP 200 and status JSON.", "Expected status returned.", "Pass"],
     ["TC-02", "POST blank text (backend test)", "Reject whitespace with HTTP 422.", "HTTP 422 received.", "Pass"],
@@ -27,6 +27,8 @@
     ["TC-22", "Canvas pie-chart popup", "Show correct emotion frequencies.", "Feature not implemented.", "Not run"],
     ["TC-23", "Drag entry onto trash target", "Delete entry; update chart and searches.", "Feature not implemented.", "Not run"],
     ["TC-24", "Local HTML WebView help", "Open help popup without internet.", "Feature not implemented.", "Not run"],
-    ["TC-25", "Performance comparison", "Measure response delay, resources and algorithms.", "Formal evaluation pending.", "Not run"]
+    ["TC-25", "Performance comparison", "Measure response delay, resources and algorithms.", "Formal evaluation pending.", "Not run"],
+    ["TC-26", "Journal / History navigation", "Keep draft and reflection on tab changes.", "Draft, advice and selected tab retained.", "Pass"],
+    ["TC-27", "Inactive future controls (UI)", "Disable future feature controls.", "All future controls disabled.", "Pass"]
   ]
 }

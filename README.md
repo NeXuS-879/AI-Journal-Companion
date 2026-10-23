@@ -1,6 +1,6 @@
 # AI Journal Companion
 
-AI Journal Companion is an OOP 3 assessment project for an Android journaling application. The planned application accepts a journal entry, sends it to a local Python FastAPI backend, and will later use Ollama with `gemma:2b` to return a dominant emotion and one line of advice.
+AI Journal Companion is an OOP 3 assessment project for an Android journaling application. The application accepts a journal entry, sends it to a local Python FastAPI backend, and uses Ollama with `gemma:2b` to return a dominant emotion and one line of advice.
 
 This repository contains the planning material, project rules, architecture and requirements documentation, a runnable Android Studio project, and a FastAPI backend integrated with local Ollama using `gemma:2b`.
 
@@ -88,13 +88,15 @@ Open `android/AIJournalCompanion` as the project root in Android Studio. From th
 .\gradlew.bat assembleDebug
 ```
 
-The Android application opens a journal entry screen with an `OutlinedTextField`, character count, and Analyze button. It rejects empty, whitespace-only, and over-limit entries using the backend's 5,000-code-point limit after trimming.
+The Android application follows `docs/wireframes/AIJournalUiWireframe.drawio`, with a top app bar and bottom Journal / History navigation. Journal contains an `OutlinedTextField`, character count, and **Analyse entry** button. It rejects empty, whitespace-only, and over-limit entries using the backend's 5,000-code-point limit after trimming.
 
-Analyze now requests local network permission when required, sends the journal to FastAPI, and displays the returned emotion, emoji, and advice. `JournalViewModel` owns immutable input, loading, result, and error state exposed through StateFlow. Compose collects this state with lifecycle awareness. During analysis a progress indicator appears and submission/input controls are disabled to prevent duplicate requests; the screen remains scrollable. Errors retain the draft so the user can retry with Analyze.
+**Analyse entry** requests local network permission when required, sends the journal to FastAPI, and displays the returned emotion, emoji, and advice. `JournalViewModel` owns immutable input, loading, result, and error state exposed through StateFlow. Compose collects this state with lifecycle awareness. During analysis a progress indicator appears and submission/input controls are disabled to prevent duplicate requests; the screen remains scrollable. Errors retain the draft so the user can retry with **Analyse entry**.
 
-Draft, result and journal history remain in ViewModel memory across activity recreation (such as rotation), but are not persisted after process death or a new app session. Changing the draft clears its previous result without removing saved entries.
+Draft, result and journal history remain in ViewModel memory across activity recreation (such as rotation), but are not persisted after process death or a new app session. Switching tabs preserves the draft and each tab's scroll position. Journal shows the latest successful entry and its emotion/advice in separate cards; this reflection remains visible while editing a new draft or after a later request fails.
 
-Each successful analysis adds a `JournalEntry` containing the trimmed submitted text, emotion, advice, stable ID and timestamp. Scroll below the form to see the session history, newest first. Failures and denied permissions do not add entries. Repeated text can be intentionally submitted as a separate entry with a distinct ID. A lazy list renders history cards as they become visible; there is no database or disk storage.
+Each successful analysis adds a `JournalEntry` containing the trimmed submitted text, emotion, advice, stable ID and timestamp. Open the History tab to see the session history, newest first. Failures and denied permissions do not add entries. Repeated text can be intentionally submitted as a separate entry with a distinct ID. A lazy list renders history cards as they become visible; there is no database or disk storage.
+
+Search, sort, chart, Help and drag-to-delete areas are disabled layout placeholders, explicitly marked as coming later. Their dropdown values are illustrative, not functioning algorithms. Existing cards keep full text and advice readable; entry-detail popups and draggable handles are deferred too. No new assessment feature is implemented by these placeholders. The light theme uses the wireframe's blue/grey palette; system dark mode remains supported.
 
 ### Android API client
 
@@ -141,6 +143,7 @@ The instrumented networking/live tests grant the local network permission throug
 - Separate Kotlin API models, a suspend API interface, and an HTTP/JSON client for `POST /analyze`
 - ViewModel/StateFlow input, loading, result and error management; local-network permission prompting; real Analyze-button integration and emotion/emoji/advice display
 - In-memory journal history with timestamped entry cards, newest-first order, and configuration-change retention
+- Wireframe-based Journal / History tabs, persistent latest reflection, and clearly disabled future feature controls
 - Architecture and requirements documentation based on the supplied planning document
 
 Not yet implemented:

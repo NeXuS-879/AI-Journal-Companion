@@ -5,36 +5,35 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.aijournalcompanion.R
-import com.example.aijournalcompanion.network.model.AnalyzeRequest
 import com.example.aijournalcompanion.network.model.Emotion
 import com.example.aijournalcompanion.ui.theme.AIJournalCompanionTheme
 
@@ -62,109 +61,61 @@ fun JournalRoute(viewModel: JournalViewModel) {
     )
 }
 
-/** Stateless rendering: input, progress, results and errors come from the ViewModel. */
+/** Only navigation is local UI state; draft, requests and history stay in the ViewModel. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JournalScreen(
     state: JournalUiState,
     onInputChanged: (String) -> Unit,
     onAnalyze: () -> Unit,
 ) {
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier.padding(innerPadding).fillMaxSize().imePadding()
-                .testTag("journal_feed"),
-            contentPadding = PaddingValues(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            item(key = "journal_form") {
-                JournalForm(state, onInputChanged, onAnalyze)
-            }
-            item(key = "history_header") {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+    val keyboard = LocalSoftwareKeyboardController.current
+    val journalScroll = rememberScrollState()
+    val historyScroll = rememberLazyListState()
+    Scaffold(
+        modifier = Modifier.fillMaxSize().imePadding(),
+        topBar = {
+            TopAppBar(
+                title = {
                     Text(
-                        stringResource(R.string.history_title, state.history.size),
-                        style = MaterialTheme.typography.titleLarge,
+                        stringResource(if (selectedTab == 0) R.string.app_name else R.string.history_screen_title),
+                        style = MaterialTheme.typography.titleMedium,
                     )
-                    Text(stringResource(R.string.history_session_notice), style = MaterialTheme.typography.bodySmall)
-                }
+                },
+                actions = {
+                    TextButton(onClick = {}, enabled = false, modifier = Modifier.heightIn(min = 48.dp)) {
+                        Text(stringResource(R.string.help_future))
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            )
+        },
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = selectedTab == 0, onClick = { keyboard?.hide(); selectedTab = 0 },
+                    icon = { Text("✎") }, label = { Text(stringResource(R.string.journal_tab)) },
+                    modifier = Modifier.testTag("journal_tab"),
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 1, onClick = { keyboard?.hide(); selectedTab = 1 },
+                    icon = { Text("☷") }, label = { Text(stringResource(R.string.history_tab)) },
+                    modifier = Modifier.testTag("history_tab"),
+                )
             }
-            if (state.history.isEmpty()) {
-                item(key = "history_empty") {
-                    Text(stringResource(R.string.history_empty))
-                }
-            }
-            items(state.history, key = { it.id }) { entry -> JournalEntryCard(entry) }
+        },
+    ) { innerPadding ->
+        val contentModifier = Modifier.padding(innerPadding).fillMaxSize()
+        if (selectedTab == 0) {
+            JournalContent(state, onInputChanged, onAnalyze, journalScroll, contentModifier)
+        } else {
+            JournalHistoryContent(state.history, historyScroll, contentModifier)
         }
     }
 }
 
-@Composable
-private fun JournalForm(
-    state: JournalUiState,
-    onInputChanged: (String) -> Unit,
-    onAnalyze: () -> Unit,
-) {
-    val inputError = when (state.inputError) {
-        JournalInputError.EMPTY -> stringResource(R.string.journal_empty_error)
-        JournalInputError.TOO_LONG -> stringResource(
-            R.string.journal_length_error, AnalyzeRequest.MAX_TEXT_LENGTH,
-        )
-        null -> null
-    }
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
-        Text(stringResource(R.string.journal_intro), style = MaterialTheme.typography.bodyLarge)
-        OutlinedTextField(
-            value = state.input,
-            onValueChange = onInputChanged,
-            enabled = !state.isBusy,
-            label = { Text(stringResource(R.string.journal_label)) },
-            placeholder = { Text(stringResource(R.string.journal_placeholder)) },
-            supportingText = {
-                Text(inputError ?: stringResource(
-                    R.string.journal_character_count,
-                    state.characterCount, AnalyzeRequest.MAX_TEXT_LENGTH,
-                ))
-            },
-            isError = inputError != null,
-            minLines = 6,
-            maxLines = 10,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Button(
-            onClick = onAnalyze, enabled = !state.isBusy,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(stringResource(if (state.isLoading) R.string.analyzing else R.string.analyze))
-        }
-        if (state.isLoading) {
-            CircularProgressIndicator()
-            Text(
-                stringResource(R.string.analysis_loading),
-                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-            )
-        }
-        state.error?.let { error ->
-            Text(
-                stringResource(error.messageResource()),
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-            )
-        }
-        state.result?.let { result ->
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-            ) {
-                Text(stringResource(R.string.analysis_result), style = MaterialTheme.typography.titleMedium)
-                Text("${result.emotion.emoji()} ${result.emotion.name}", style = MaterialTheme.typography.headlineSmall)
-                Text(result.advice, style = MaterialTheme.typography.bodyLarge)
-            }
-        }
-    }
-}
-
-private fun JournalAnalysisError.messageResource(): Int = when (this) {
+internal fun JournalAnalysisError.messageResource(): Int = when (this) {
     JournalAnalysisError.CONNECTION -> R.string.analysis_connection_error
     JournalAnalysisError.TIMEOUT -> R.string.analysis_timeout_error
     JournalAnalysisError.PERMISSION -> R.string.analysis_permission_error
