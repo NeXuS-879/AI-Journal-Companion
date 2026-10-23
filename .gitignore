@@ -26,11 +26,13 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
+.kotlin/
 
 # IDE files
 .idea/
 *.iml
 .vscode/
+.vs/
 
 # Operating system files
 .DS_Store

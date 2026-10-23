@@ -4,7 +4,7 @@
 
 This document defines the planned architecture for the AI Journal Companion OOP 3 assessment. It translates the supplied planning document into module boundaries that support incremental delivery, visible OOP design, independently testable custom algorithms, and REST/JSON communication.
 
-The current implementation milestone includes only the repository foundation and a minimal FastAPI service. The Android Studio project and Ollama integration are deliberately deferred.
+The current implementation includes the repository foundation, a Kotlin and Jetpack Compose journal input screen, a validated FastAPI analysis contract, and local Ollama integration using `gemma:2b`. Android-to-FastAPI networking, result presentation, and journal history are the next development increments.
 
 ## System context
 
@@ -31,11 +31,14 @@ AI-Journal-Companion/
 |-- AGENTS.md                 Permanent assessment development rules
 |-- README.md                 Setup, operation, and project status
 |-- docs/                     Planning and maintained technical documents
-|-- backend/                  Python FastAPI service
-`-- android/                  Reserved for the later Android Studio project
+|-- backend/                  Python FastAPI service and contract tests
+`-- android/
+    `-- AIJournalCompanion/   Android Studio Gradle project root
 ```
 
-The backend initially contains `main.py`, `requirements.txt`, and an ignored `.venv` virtual environment. The `android` directory is a placeholder only; it is not yet an Android Studio project.
+The backend contains explicit API models, an analysis service boundary, route tests, dependency files, and an ignored `.venv` virtual environment. The Android project is a single-module Compose application. `MainActivity` hosts `ui/journal/JournalScreen.kt`, which separates temporary input state and validation from a stateless form. The form contains the required `OutlinedTextField` and Analyze button. Screen text lives in Android string resources.
+
+This first UI increment keeps draft text only in screen memory and checks the same trimmed 5,000-character limit as the backend. Valid submission displays an explicit not-connected notice. Network calls, ViewModel state, results, and session history remain future increments; no generated analysis is shown by this screen yet.
 
 ## Planned Android architecture
 
@@ -54,18 +57,18 @@ Interfaces or strategy abstractions should be introduced where they make the thr
 
 ## Planned backend architecture
 
-The backend will evolve incrementally from the current status application:
+The backend is organised into the following responsibilities:
 
 - **Application entry point:** creates and configures the FastAPI application and routes.
 - **API models:** Pydantic request and response models validate journal text and the structured emotion/advice result.
-- **Analysis service:** coordinates prompt construction, Ollama access, response parsing, normalisation, and fallback/error behaviour.
-- **Ollama client:** encapsulates local HTTP communication with the Ollama API and the required `gemma:2b` model.
+- **Analysis service:** isolates the API route from the selected analysis provider and maps provider failures into application-level errors.
+- **Ollama client:** owns the constrained prompt, local HTTP communication, JSON-schema request, response parsing, and Pydantic validation for the required `gemma:2b` model.
 
-The Ollama client is intentionally absent from the current milestone. It should be added only after the FastAPI request/response contract has been agreed and tested independently.
+These components are implemented. The active service creates an Ollama client using `OLLAMA_BASE_URL` and `OLLAMA_MODEL` environment settings, with local defaults of `http://127.0.0.1:11434` and `gemma:2b`.
 
 ## REST and JSON boundary
 
-The planned analysis operation is a consistent endpoint such as `POST /analyze`.
+The analysis operation is `POST /analyze`.
 
 Conceptual request:
 
@@ -84,7 +87,11 @@ Conceptual successful response:
 }
 ```
 
-The final endpoint name and exact validation rules must remain consistent across Android code, backend models, tests, README instructions, and help content. The backend should constrain or normalise emotion labels so sorting, searching, and chart categories remain stable.
+Requests contain trimmed, non-empty journal text with a maximum length of 5,000 characters. Successful responses use one of the controlled labels `JOY`, `SADNESS`, `ANGER`, `FEAR`, `SURPRISE`, or `NEUTRAL`, plus non-empty advice of no more than 300 characters. These rules must remain consistent across Android code, backend tests, README instructions, and help content.
+
+FastAPI sends a non-streaming request to Ollama's `POST /api/generate` endpoint. The Pydantic response schema is supplied through Ollama's structured-output `format` field, and temperature is set to zero for more deterministic output. The returned JSON string is validated again before it crosses the FastAPI boundary.
+
+Connection, timeout, service, or missing-model failures become HTTP `503`. Generated content outside the required schema becomes HTTP `502`. Tests use injected services and mocked HTTP sessions so success and error paths remain deterministic without requiring live inference.
 
 The existing `GET /` endpoint is only a health/status check and does not call Ollama.
 
@@ -120,10 +127,10 @@ All strategies should share consistent inputs and outputs so behavioural and per
 
 ## Incremental implementation order
 
-1. Repository, documentation, virtual environment, and minimal FastAPI status route.
-2. Pydantic request/response contract and a tested `POST /analyze` boundary without Android coupling.
-3. Ollama `gemma:2b` client, controlled prompt, response validation, and backend error handling.
-4. Kotlin and Jetpack Compose project with the core journal workflow and in-memory model.
+1. Repository, documentation, virtual environment, Android baseline, and minimal FastAPI status route. Completed.
+2. Pydantic request/response contract and a tested `POST /analyze` boundary without Android coupling. Completed.
+3. Ollama `gemma:2b` client, controlled prompt, response validation, and backend error handling. Completed.
+4. Kotlin and Jetpack Compose core journal workflow and in-memory model.
 5. Android-to-FastAPI REST/JSON integration.
 6. Custom sorting algorithms and selectable controls.
 7. Binary Tree, HashMap, and Doubly Linked List search and selectable controls.
@@ -133,4 +140,3 @@ All strategies should share consistent inputs and outputs so behavioural and per
 ## Verification approach
 
 Backend routes should be tested independently before Android integration. Domain calculations, custom algorithms, and data structures should have focused tests, while Compose interactions and the complete local AI flow require integration or manual evidence. Results must only be reported as passing when the relevant command or procedure was actually executed.
-

@@ -52,22 +52,31 @@ Journal persistence across process restarts, cloud AI services, public productio
 - Help must be supplied as a local HTML file.
 - Frontend/backend communication must use REST and JSON.
 
-## Current milestone requirements
+## Current implemented baseline
 
-The repository setup milestone is complete when:
+The repository currently provides:
 
 - Git is initialised.
 - `AGENTS.md`, `README.md`, `.gitignore`, `docs`, `backend`, and `android` exist.
-- The Android directory is only a placeholder and no Android Studio project exists yet.
+- `android/AIJournalCompanion` contains a Kotlin and Jetpack Compose Android Studio project with a journal input screen, character count, and Analyze button.
+- Android input validation rejects blank and whitespace-only entries and entries longer than 5,000 characters after trimming (partial implementation of FR-01 and FR-12).
+- The first Android UI increment displays an explicit notice when valid input is submitted because Android networking and analysis result presentation are not implemented yet.
 - `backend/.venv` exists and contains FastAPI, Uvicorn, Requests, and Pydantic.
-- `backend/requirements.txt` records the direct Python dependencies.
+- Backend runtime and test dependency files record the direct Python dependencies.
 - `backend/main.py` defines a FastAPI application.
 - `GET /` returns a simple status message and does not attempt Ollama integration.
+- `POST /analyze` validates journal text and defines the structured REST/JSON response boundary.
+- The modular analysis service calls local Ollama through `POST /api/generate` using `gemma:2b`, a constrained prompt, non-streaming output, and the Pydantic JSON schema.
+- Automated backend tests verify validation, success, unavailable-service behaviour, invalid model responses, Ollama HTTP communication, and OpenAPI registration.
 - Architecture and requirements documents are aligned with the supplied planning document.
 
 ## Planned API contract
 
-The planned analysis endpoint should use one documented name, provisionally `POST /analyze`. Its request contains journal text. Its success response contains `emotion` and `advice` strings. Exact field constraints, allowed emotion labels, status codes, and error bodies must be defined before implementation and used consistently by both projects.
+The analysis endpoint is `POST /analyze`. Its request contains a trimmed, non-empty `text` string with a maximum length of 5,000 characters. Its successful response contains an `emotion` value and an `advice` string of no more than 300 characters.
+
+The controlled emotion set is `JOY`, `SADNESS`, `ANGER`, `FEAR`, `SURPRISE`, and `NEUTRAL`. The set must be used consistently by backend parsing, Android models, sorting, searching, and chart categories.
+
+Ollama connection, timeout, service, and missing-model failures return HTTP `503`. Generated content that cannot be validated against the response schema returns HTTP `502`. Request validation failures use FastAPI's HTTP `422` response.
 
 `GET /` remains a lightweight backend status operation.
 
@@ -87,4 +96,4 @@ The planned analysis endpoint should use one documented name, provisionally `POS
 
 Requirements changes must be assessed for impact on scope, schedule, tests, help, README, and architecture. Assessment-critical or scope-changing items should be confirmed with the lecturer or client representative where necessary. After an approved change, update the relevant implementation and documentation together and preserve the change in Git history.
 
-Open items from the plan include confirming the controlled emotion set, final analysis endpoint name, primary test device or emulator, Git hosting or backup method, exact assessment due date, and any assessor clarification about the local HTML help presentation.
+The controlled emotion set, `/analyze` endpoint name, and GitHub hosting have been established. Remaining open items include confirming the primary test device or emulator, exact assessment due date, and any assessor clarification about the local HTML help presentation.

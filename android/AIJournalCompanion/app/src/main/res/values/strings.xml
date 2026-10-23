@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">AI Journal Companion</string>
+    <string name="journal_intro">Take a moment to reflect on your day.</string>
+    <string name="journal_label">Journal entry</string>
+    <string name="journal_placeholder">How are you feeling today?</string>
+    <string name="journal_character_count">%1$d / %2$d characters</string>
+    <string name="journal_empty_error">Please write a journal entry before analyzing.</string>
+    <string name="journal_length_error">Keep your entry to %1$d characters or fewer.</string>
+    <string name="analyze">Analyze</string>
+    <string name="analysis_not_connected">Analysis is not available in this app version yet. Your entry has not been sent.</string>
+</resources>
